@@ -2,21 +2,17 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import { createServer as createViteServer } from "vite";
-import { GoogleGenAI } from "@google/genai";
-import { MongoClient } from "mongodb";
+import { GoogleGenerativeAI } from "@google/generative-ai"; // L'import correct
 
-const PORT = process.env.PORT || 3000;
-const DB_FILE = path.join(process.cwd(), "database.json");
-
-let ai: GoogleGenAI | null = null;
+// Initialisation Gemini
+let ai: any = null;
 if (process.env.GEMINI_API_KEY) {
   try {
-    ai = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
-      httpOptions: { headers: { 'User-Agent': 'aistudio-build' } }
-    });
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    ai = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    console.log("Gemini API OK");
   } catch (err) {
-    console.error(err);
+    console.error("Erreur Gemini:", err);
   }
 }
 
